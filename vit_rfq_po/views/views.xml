@@ -1,0 +1,15 @@
+<odoo>
+  <data>
+    <!-- inherit -->
+    <record model="ir.ui.view" id="purchase_order_form">
+      <field name="name">purchase_order_form</field>
+      <field name="model">purchase.order</field>
+      <field name="inherit_id" ref="purchase.purchase_order_form"/>
+      <field name="arch" type="xml">
+        <field name="analytic_tag_ids" position="after">
+          <field name="business_id" groups="analytic.group_analytic_tags" widget="many2many_tags" options="{'color_field': 'color'}"/>
+        </field>
+      </field>
+    </record>
+  </data>
+</odoo>

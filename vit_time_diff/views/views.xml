@@ -1,0 +1,50 @@
+<odoo>
+  <data>
+    <!-- tree -->
+    <record model="ir.ui.view" id="vit_time_diff_tree">
+      <field name="name">vit_time_diff_tree</field>
+      <field name="model">vit.time_diff</field>
+      <field name="type">tree</field>
+      <field name="priority" eval="8"/>
+      <field name="arch" type="xml">
+        <tree string="diff">
+          <field name="depart"/>
+          <field name="arrive"/>
+          <field name="time_diff"/>
+        </tree>
+      </field>
+    </record>
+    <!-- form -->
+    <record model="ir.ui.view" id="vit_time_diff_form">
+      <field name="name">vit_time_diff_form</field>
+      <field name="model">vit.time_diff</field>
+      <field name="type">form</field>
+      <field name="priority" eval="8"/>
+      <field name="arch" type="xml">
+        <form string="diff">
+          <group>
+            <field name="depart"/>
+            <field name="arrive"/>
+            <field name="time_diff"/>
+          </group>
+        </form>
+      </field>
+    </record>
+    
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="act_open_vit_time_diff_view">
+      <field name="name">Time Diff</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">vit.time_diff</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    
+    <menuitem id="vit_time_diff.time_diff"
+              name="Time Diff"
+              parent="sale.report_sales_team"
+              sequence="50"
+              action="act_open_vit_time_diff_view"/>
+  </data>
+</odoo>

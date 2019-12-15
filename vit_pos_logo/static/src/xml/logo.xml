@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="point_of_sale.template" xml:space="preserve">
+
+    <t t-extend="Chrome">
+        <t t-jquery=".pos-branding" t-operation="replace">
+            <img class="pos-logo" src="/vit_pos_logo/static/src/img/autowallpaper_-300141.jpg" />
+            <span class="placeholder-UsrnameWidget"></span>
+        </t>
+    </t>
+
+
+</templates>    

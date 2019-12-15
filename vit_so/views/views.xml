@@ -1,0 +1,16 @@
+<odoo>
+  <data>
+    <!-- inherit -->
+    <record model="ir.ui.view" id="view_sale_form">
+      <field name="name">sale_order_form</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//notebook/page[1]/field/tree/field[@name='analytic_tag_ids']" position="after">
+          <field name="business_id" groups="analytic.group_analytic_tags" widget="many2many_tags" options="{'color_field': 'color'}" />
+          <field name="account_analytic_id" context="{'default_partner_id':parent.partner_id}" groups="analytic.group_analytic_accounting"/>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>
