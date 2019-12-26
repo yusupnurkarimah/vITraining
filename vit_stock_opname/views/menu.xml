@@ -1,0 +1,31 @@
+<odoo>
+    <data>
+        <!-- action window -->
+        <record id="action_vit_stock_opname" model="ir.actions.act_window">
+            <field name="name">SON WIP</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">vit.stock_opname</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree,form,calendar</field>
+            <field name="context">{"search_default_fieldname":1}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                Click to add a new SON WIP
+                </p><p>
+                Click the Create button to add a new SON WIP
+                </p>
+            </field>
+        </record>
+
+        <menuitem 
+                    id="Stock_opname_0" 
+                    name="SON WIP" 
+                    sequence="20" />
+                    
+		<menuitem id="Stock_opname_1" 
+                    name="SON WIP"
+                    parent="Stock_opname_0"
+                    action="action_vit_stock_opname"
+                    sequence="40" />
+    </data>
+</odoo>

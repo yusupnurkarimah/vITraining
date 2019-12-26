@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- report qweb view -->
+        <report id="report_stock_opname_menu" 
+                string="Stock opname"
+                model="vit.stock_opname" 
+                report_type="qweb-pdf" 
+                file="vit_stock_opname.file"  
+                name="vit_stock_opname.file_report" />
+
+        <!-- main template -->
+        <template id="vit_stock_opname.file_report">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="vit_stock_opname.file_report_document" />
+                </t>
+            </t>
+        </template>
+
+        <!-- document template -->
+        <template id="vit_stock_opname.file_report_document" >
+            <t t-call="web.external_layout">
+                <!-- <t t-set="doc" t-value="doc.with_context({'lang': lang})"/> -->
+                <div class="page">
+                    <h2>
+                        Stock opname: <span t-field="doc.name"/>
+                    </h2>
+                    <div class="row mt32 mb32">
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>Tanggal</strong>
+                            <p class="m-0" t-field="doc.tanggal" />
+                        </div>
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>Storage</strong>
+                            <p class="m-0" t-field="doc.Storage" />
+                        </div>
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>Data entry</strong>
+                            <p class="m-0" t-field="doc.data_entry" />
+                        </div>
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>No po</strong>
+                            <p class="m-0" t-field="doc.No_po" />
+                        </div>
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>No kartu</strong>
+                            <p class="m-0" t-field="doc.No_kartu" />
+                        </div>
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>Item</strong>
+                            <p class="m-0" t-field="doc.item_id" />
+                        </div>
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>Item name</strong>
+                            <p class="m-0" t-field="doc.item_name" />
+                        </div>
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>Customer</strong>
+                            <p class="m-0" t-field="doc.Customer" />
+                        </div>
+                            <strong>Qty</strong>
+                            <p class="m-0" t-field="doc.Qty" />
+                        </div>
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>Proses</strong>
+                            <p class="m-0" t-field="doc.Proses" />
+                        </div>
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>No kartu son</strong>
+                            <p class="m-0" t-field="doc.No_kartu_son" />
+                        </div>
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>Keterangan</strong>
+                            <p class="m-0" t-field="doc.keterangan" />
+                        </div>
+                    </div>
+                </div>
+                <div class="oe_structure"/>
+            </t>
+        </template>
+
+    </data>
+</odoo>
