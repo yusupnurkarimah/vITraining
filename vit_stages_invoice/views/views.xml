@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="account_stage_form">
+            <field name="name">account_stage_form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="stages" domain="[('usage', '=', ['out invoice'])]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="account_stages_filter" model="ir.ui.view">
+            <field name="name">account_stages_filter</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter" />
+            <field name="type">search</field>
+            <field name="priority" eval="16" />
+            <field name="active" eval="True" />
+            <field name="arch" type="xml">
+                <xpath expr="//group/filter[@name='status']" position="after">
+                    <filter string="Stages" name="stages" domain="[]" context="{'group_by':'stages'}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
