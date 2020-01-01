@@ -11,7 +11,7 @@
                 <tree string="Stock opname">
                     <field name="name"/>
                     <field name="tanggal" />
-                    <field name="Storage" />
+                    <field name="storage_id" />
                     <field name="data_entry" />
                     <field name="No_po" />
                     <field name="No_kartu" />
@@ -21,6 +21,7 @@
                     <field name="Qty" />
                     <field name="Proses" />
                     <field name="keterangan" invisible="1"/>
+                    <field name="export_excels"/>
                 </tree>
             </field>
         </record>
@@ -33,6 +34,7 @@
             <field name="arch" type="xml">
                 <form string="SON WIP">
                     <header>
+                        <button string="Print Excel" type="object" name="print_excel" class="btn-success" icon="fa-table"/>
                         <!--button string="Confirm" type="object" name="action_confirm" states="draft" /-->
                         <!--button string="Mark as Done" type="object" name="action_done" states="confirmed" /-->
                         <!--button string="Reset to Draft" type="object" name="action_draft" states="confirmed,done" /-->
@@ -53,6 +55,7 @@
                                 <field name="tanggal" />
                                 <field name="data_entry" />
                                 <field name="Customer" />
+                                <field name="_barcode_scanned" widget="barcode_handler" invisible="1"/>
                             </group>
                             <group>
                                 <field name="No_po"/>
@@ -62,8 +65,8 @@
                                 <field name="Qty" />
                             </group>
                             <group>
-                                <field name="Storage" />
-                                <field name="Proses" widget="selection"/>
+                                <field name="storage_id" widget="selection"/>
+                                <field name="Proses" widget="selection" domain="[('storage_id', '=',storage_id)]"/>
                             </group>
                             <group>
                                 <field name="keterangan"/>
@@ -83,7 +86,7 @@
 
                     <filter string="Name" name="filter_by_name" domain="[('name','=','')]" />
                     <filter string="Tanggal" name="filter_by_tanggal" domain="[('tanggal','=','')]" />
-                    <filter string="Storage" name="filter_by_Storage" domain="[('Storage','=','')]" />
+                    <filter string="storage_id" name="filter_by_storage_id" domain="[('storage_id','=','')]" />
                     <filter string="Data entry" name="filter_by_data_entry" domain="[('data_entry','=','')]" />
                     <filter string="No po" name="filter_by_No_po" domain="[('No_po','=','')]" />
                     <filter string="No kartu" name="filter_by_No_kartu" domain="[('No_kartu','=','')]" />
@@ -95,7 +98,7 @@
                     <filter string="Keterangan" name="filter_by_keterangan" domain="[('keterangan','=','')]" />
                     <field name="name" select="True"/>
                     <field name="tanggal" select="True"/>
-                    <field name="Storage" select="True"/>
+                    <field name="storage_id" select="True"/>
                     <field name="data_entry" select="True"/>
                     <field name="No_po" select="True"/>
                     <field name="No_kartu" select="True"/>
@@ -119,7 +122,7 @@
                     <field name="id" />
                     <field name="name" />
                     <field name="tanggal" />
-                    <field name="Storage" />
+                    <field name="storage_id" />
                     <field name="data_entry" />
                     <field name="No_po" />
                     <field name="No_kartu" />
@@ -141,7 +144,7 @@
                                             Tanggal :  <field name="tanggal"></field>
                                         </li>
                                         <li>
-                                            Storage :  <field name="Storage"></field>
+                                            storage_id :  <field name="storage_id"></field>
                                         </li>
                                         <li>
                                             Data Entry : <field name="data_entry"></field>
@@ -175,16 +178,6 @@
                 <graph string="SON WIP" type="bar">
                 </graph>
             </field>
-        </record>
-        <!-- sequence -->
-        <record id="NO_SON" model="ir.sequence">
-            <field name="name">NO_SON</field>
-            <field name="code">vit.stock_opname</field>
-            <field name="prefix">SON/</field>
-            <field name="suffix">/WIP</field>
-            <field name="padding">3</field>
-            <field eval="1" name="number_next"/>
-            <field eval="1" name="number_increment"/>
         </record>
 
     </data>

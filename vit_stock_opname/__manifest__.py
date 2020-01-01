@@ -19,14 +19,18 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','mrp','product'],
+    'depends': ['base','mrp','product','barcodes'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'report/file.xml',
+        # 'report/file.xml',
         'views/views.xml',
         'views/menu.xml',
+        'views/squence.xml',
+        'views/workcenter.xml',
+        'data/mrp.workcenter.csv',
+        'data/storage.proses.csv',
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -4,46 +4,23 @@ from odoo import models, fields, api
 import time
 import datetime
 import logging
+from io import BytesIO
+import xlsxwriter
+import base64
+from odoo.exceptions import Warning
 _logger = logging.getLogger(__name__)
 
 
 class stock_opname(models.Model):
     _name = 'vit.stock_opname'
+    _inherit = ["barcodes.barcode_events_mixin"]
 
     name = fields.Char(string='No Kartu SON', readonly=True)
     tanggal = fields.Date( string="Tanggal",  required=False, 
             default=lambda self: time.strftime("%Y-%m-%d"))
-    Storage = fields.Char(string='Storage', compute='_compute_storage' )
-
-    @api.depends('Storage','Proses')
-    def _compute_storage(self):
-        string = str(self.Proses.name)
-        for record in self:
-            if 'H' in string:
-                record.Storage = "HEADING"
-            elif 'R' in string:
-                record.Storage = "ROLLING."
-            elif 'PL' in string:
-                record.Storage = "PLATING."
-            elif 'FQ' in string:
-                record.Storage = "FQ."
-            elif 'F' == string:
-                record.Storage = "FURNACE."
-
-    @api.onchange('Proses')
-    def onchange_storage(self):
-        string = str(self.Proses.name)
-        
-        if 'H' in string:
-            self.Storage = "HEADING"
-        elif 'R' in string:
-            self.Storage = "ROLLING."
-        elif 'PL' in string:
-            self.Storage = "PLATING."
-        elif 'FQ' in string:
-            self.Storage = "FQ."
-        elif 'F' == string:
-            self.Storage = "FURNACE."
+    storage_id = fields.Many2one(
+        string='Storage',
+        comodel_name='storage.proses')
 
     No_kartu_son = fields.Char( string="nokartu",  help="")
     data_entry = fields.Many2one('res.users', 'Data Entry', default=lambda self: self.env.user, track_visibility='onchange')
@@ -58,6 +35,8 @@ class stock_opname(models.Model):
     Customer = fields.Char(related='No_po.name', string="Customer",)
     Qty = fields.Float(string="Qty [kg]",) 
     Proses = fields.Many2one(string='Proses', comodel_name='mrp.workcenter',)
+    data = fields.Binary('File')
+    export_excels = fields.Boolean(string='Expert Excel', dafault=False)
 
     @api.model
     def create(self, vals):
@@ -77,3 +56,128 @@ class stock_opname(models.Model):
         else:
             self.Qty = False
             return {'domain': {'Qty': [('product_qty', '!=', False)]}}
+
+    #///////////////////////// BARCODE \\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    def _add_mo_barcode(self, barcode):
+        
+        mo = self.env["mrp.production"].search([('name','=', barcode)])
+        
+        if mo :
+            self.No_po = mo.id
+        
+    def on_barcode_scanned(self, barcode):
+        self._add_mo_barcode(barcode)
+
+    #////////////////////////// EXCEL \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    def cell_format(self, workbook):
+        cell_format = {}
+        cell_format['title'] = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'valign': 'vcenter',
+            'font_size': 20,
+            'font_name': 'Arial',
+        })
+        cell_format['header'] = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'border': True,
+            'font_name': 'Arial',
+        })
+        cell_format['content'] = workbook.add_format({
+            'font_size': 11,
+            'border': False,
+            'font_name': 'Arial',
+        })
+        cell_format['content_float'] = workbook.add_format({
+            'font_size': 11,
+            'border': True,
+            'num_format': '#,##0.00',
+            'font_name': 'Arial',
+        })
+        cell_format['total'] = workbook.add_format({
+            'bold': True,
+            'num_format': '#,##0.00',
+            'border': True,
+            'font_name': 'Arial',
+        })
+        return cell_format, workbook
+
+
+    @api.multi
+    def print_excel(self):
+        obj_stock_opname = self.env["vit.stock_opname"].search([('export_excels','=',False)])
+        
+        headers = [
+            "External ID",
+            "Reference",
+            "Work Orders/Display Name",
+            "Work Orders/Work Order",
+            "Work Orders/Status",
+            "Work Orders/Current Qty",
+            "Work Orders/Produced Qty",
+        ]
+
+        fp = BytesIO()
+        workbook = xlsxwriter.Workbook(fp)
+        cell_format, workbook = self.cell_format(workbook)
+
+        if not obj_stock_opname :
+            raise Warning("Data tidak ditemukan. Mohon Create SOP WIP dulu")
+
+        worksheet = workbook.add_worksheet()
+        worksheet.set_column('A:ZZ', 30)
+        column_length = len(headers)
+
+        column = 0
+        row = 0
+        for col in headers:
+            worksheet.write(row, column, col, cell_format['header'])
+            column += 1
+
+        ########### contents
+        row = 1
+        final_data=[]
+
+        for data in obj_stock_opname :
+            final_data.append([
+                "Son"+ str(data.id),
+                data.No_po.name,
+                data.storage_id.name,
+                data.Proses.name,
+                "Progress",
+                data.Qty,
+                data.Qty,
+            ])
+            
+            data.export_excels=True
+
+        for data in final_data:
+            column = 0
+            for col in data:
+                worksheet.write(row, column, col, cell_format['content'] if column<0 else  cell_format['content_float'])
+                column += 1
+            row += 1
+
+        workbook.close()
+        result = base64.encodestring(fp.getvalue())
+        filename = self.name + '-' + str(self.tanggal) + '%2Exlsx'
+        self.write({'data':result})
+        url = "web/content/?model="+self._name+"&id="+str(self.id)+"&field=data&download=true&filename="+filename
+        return {
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'new',
+        }
+
+class workcenter(models.Model):
+    _inherit = 'mrp.workcenter'
+
+    storage_id = fields.Many2one(
+        string='Storage',
+        comodel_name='storage.proses')
+
+class storage(models.Model):
+    _name = 'storage.proses'
+
+    name = fields.Char(string='Name')
