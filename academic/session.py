@@ -35,7 +35,7 @@ class session(models.Model):
 		if not vals.get('name', False) or vals['name'] == 'New':
 			vals['name'] = self.env['ir.sequence'].next_by_code('academic.session') or 'Error Number!!!'
 		return super(session, self).create(vals)
-    	
+		
 	@api.multi
 	def action_draft(self):
 		self.state = SESSION_STATES[0][0]
